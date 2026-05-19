@@ -1,0 +1,3 @@
+pipeline.db
+*.db-shm
+*.db-wal

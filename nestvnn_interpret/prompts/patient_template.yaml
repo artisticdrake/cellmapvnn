@@ -1,0 +1,51 @@
+# Interpretation field definitions.
+# Edit the 'description' of each field to change what the AI produces.
+# Do NOT change the 'key' values — they are used as JSON keys and DB column names.
+# Add or remove fields as needed; the pipeline will enforce whatever is listed here.
+
+version: "1.0"
+
+fields:
+  - key: survival_prediction_summary
+    description: >
+      1-2 sentences: state whether the model predicts OS > 46 months (favorable)
+      or OS ≤ 46 months (unfavorable), and at what probability. Cite the exact
+      predicted_prob value from the input. Also state the actual binary_label
+      (ground truth) if available.
+
+  - key: top_driver_systems
+    description: >
+      List the top 3 biological systems by patient_rlipp score. For each system,
+      state: (1) the system ID exactly as given, (2) the patient_rlipp value,
+      (3) the cohort_rlipp value for context, (4) the top 2 genes by importance
+      within that system (names and importance values from the input only).
+      Only include systems present in the input data.
+
+  - key: key_genes
+    description: >
+      Identify the top 5 genes by importance score for this patient.
+      For each gene state: (1) gene symbol, (2) importance value,
+      (3) signed_z (positive = above population mean, negative = below),
+      (4) cohort_rho (population-level Spearman correlation with model predictions).
+      Do not infer clinical significance beyond what these numbers directly indicate.
+
+  - key: biological_logic
+    description: >
+      If boolean logic data is provided for any of this patient's top systems,
+      describe the highest-consistency gate relationship: state parent system,
+      child systems, gate type, and consistency score exactly as given.
+      If no boolean logic data is available, write null.
+
+  - key: confidence_tier
+    description: >
+      Classify the prediction confidence as exactly one of: "high", "moderate", or "low".
+      Rules — high: predicted_prob < 0.25 or > 0.75.
+              moderate: predicted_prob in [0.25, 0.40) or (0.60, 0.75].
+              low: predicted_prob in [0.40, 0.60].
+      State the exact predicted_prob value that determined this classification.
+
+  - key: caveat
+    description: >
+      One sentence describing what this genomic model output cannot determine on its own
+      (for example: treatment history, imaging findings, pathology subtype, or response
+      to specific therapies). Be specific to this patient's data profile if possible.

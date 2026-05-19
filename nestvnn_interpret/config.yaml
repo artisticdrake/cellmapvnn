@@ -1,0 +1,60 @@
+# NeST-VNN Interpretation Pipeline — Configuration
+# All data paths are relative to nest_vnn_root.
+
+nest_vnn_root: C:\Users\prath\OneDrive\Desktop\cellmapvnn\bioitworld_nest_vnn
+
+study:
+  study_id: breast_msk_2025
+  label: binary_os_months
+  # OS threshold used when binarising the endpoint
+  os_threshold_months: 46.0
+
+paths:
+  # MLflow annotation run artifacts
+  mlruns_annotation: mlruns\1\1c772e349ed9495c923b8c4ef6203df8\artifacts\annotation
+  mlruns_training:   mlruns\1\7c7c0b486b624931aab7afa69761b4d6\artifacts\input
+
+  # Per-patient annotation files (under mlruns_annotation)
+  patient_gene_importance: patient_gene_importance.txt
+  patient_term_importance: patient_term_importance.txt
+  patient_rlipp:           patient_rlipp.txt
+  # Optional — set to null if file does not exist
+  patient_gene_signed_z:   patient_gene_signed_z.txt
+
+  # Cohort-level annotation files (under mlruns_annotation)
+  rlipp_scores:           rlipp_scores.txt
+  gene_scores:            gene_scores.txt
+  boolean_logic:          boolean_logic.txt
+  subsystem_gene_weights: subsystem_gene_weights.txt
+
+  # Ontology (under mlruns_training)
+  ontology: ontology.txt
+
+  # Data output files (relative to nest_vnn_root)
+  training_data:        data\output\breast_msk_2025\nest_vnn_input\training_data.txt
+  clinical_outcomes:    data\output\breast_msk_2025\cbioportal_output\clinical_outcomes.csv
+  predict_probabilities: data\output\breast_msk_2025\binary_os_months\metrics\predict_probabilities.txt
+  predict_predictions:   data\output\breast_msk_2025\binary_os_months\metrics\predict_predictions.txt
+  predict_logits:        data\output\breast_msk_2025\binary_os_months\metrics\predict.txt
+
+db:
+  path: data\pipeline.db
+
+ai:
+  backend: anthropic          # anthropic | openai | ollama
+  model: claude-sonnet-4-6    # or claude-opus-4-7, gpt-4o, llama3.1:70b
+  api_key_env: ANTHROPIC_API_KEY
+  ollama_base_url: http://localhost:11434
+  batch_size: 5               # HARD LIMIT — do not increase
+  max_tokens_response: 2000
+  temperature: 0.1
+  top_n_genes: 10             # genes per patient in prompt
+  top_n_systems: 5            # systems per patient in prompt
+
+prompt:
+  template_file: prompts\patient_template.yaml
+  system_prompt_file: prompts\system_prompt.txt
+
+gui:
+  page_title: "NeST-VNN Breast Cancer Interpretation"
+  results_per_page: 25
